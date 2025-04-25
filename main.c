@@ -20,21 +20,37 @@ typedef struct {
 }Caserne;
 
 int CaserneAlloc(Caserne ***pppCaserne, int *pNbCaserne);
-
+int IntervAlloc(Intervention ***pppInterv, int *pNbInterv);
 
 int main(void) {
+    char encoCaserne, encoInterv;
     int nbCaserne = 0;
+    int nbInterv = 0;
     Caserne **ppcaserne = NULL;
 
     do {
+        // DEBUG // printf("\n! REALLOC CASERNE");
         int errorCode = CaserneAlloc(&ppcaserne, &nbCaserne);
         if (errorCode != 0) {
-            return 1;
+            return errorCode;
         }
         else { // Allocation Caserne reussis
-
+            // DEBUG // printf("\n!! REALLOC CASERRNE REUSSIS");
+            ppcaserne[nbCaserne - 1]->ppTinterv = NULL;
+            do {
+                // DEBUG // printf("\n! REALLOC INTERV");
+                int errorCode = IntervAlloc(&ppcaserne[nbCaserne - 1]->ppTinterv, &nbInterv);
+                if (errorCode != 0) {
+                    return errorCode;
+                }
+                else {
+                    // DEBUG // printf("\n!! ALLOC INTERV REUSSIS");
+                    encoInterv = getche();
+                }
+            }while (encoInterv =='y' || encoInterv == 'Y');
         }
-    }while(1);
+        encoCaserne = getche();
+    }while(encoCaserne == 'y' || encoCaserne == 'Y');
 
 
 
@@ -44,20 +60,36 @@ int main(void) {
 
 int CaserneAlloc(Caserne ***pppcaserne, int *pNbCaserne) {
     (*pNbCaserne)++;
-    // DEBUG // printf("%d\n", *pNbCaserne);
-    Caserne ***pppcaserneS = NULL;
+    Caserne **ppcaserneS = *pppcaserne;
 
-    pppcaserneS = pppcaserne;
-    *pppcaserne =  realloc(*pppcaserne, (*pNbCaserne) * sizeof(Caserne *));
+    ppcaserneS = *pppcaserne;
+    *pppcaserne = (Caserne **) realloc(*pppcaserne, (*pNbCaserne) * sizeof(Caserne *));
     if (!(*pppcaserne)) {
         (*pNbCaserne)--;
-        pppcaserne = pppcaserneS;
+        *pppcaserne = ppcaserneS;
+        return -1;
     }
 
-    (*pppcaserne)[*pNbCaserne - 1] = malloc(sizeof(Caserne));
+    (*pppcaserne)[*pNbCaserne - 1] = (Caserne *) malloc(sizeof(Caserne));
     if (!(*pppcaserne)[*pNbCaserne - 1]) {
-        return 2;
+        return -2;
     }
+
+    return 0;
 }
+
+int IntervAlloc(Intervention ***pppInterv, int *pNbInterv) {
+    (*pNbInterv)++;
+    *pppInterv = (Intervention **) realloc(*pppInterv, (*pNbInterv) * sizeof(Intervention *));
+    if (!(*pppInterv)) {
+        return -3;
+    }
+    (*pppInterv)[*pNbInterv - 1] = (Intervention * ) malloc(sizeof(Intervention));
+    if (!(*pppInterv)[*pNbInterv - 1]) {
+        return -4;
+    }
+    return 0;
+}
+
 
 
