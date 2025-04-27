@@ -3,7 +3,7 @@
 #include <conio.h>
 
 typedef struct {
-    char data[11];
+    char date[11];
     int nbAmb;
     int nbInc;
     int nbDec;
@@ -21,16 +21,20 @@ typedef struct {
 
 int CaserneAlloc(Caserne ***pppCaserne, int *pNbCaserne);
 int IntervAlloc(Intervention ***pppInterv, int *pNbInterv);
+void CaserneAquisition(Caserne *ppcasern);
+void IntervAquisition(Intervention *pInterv);
 
 int main(void) {
     char encoCaserne, encoInterv;
     int nbCaserne = 0;
-    int nbInterv = 0;
     Caserne **ppcaserne = NULL;
 
     do {
         // DEBUG // printf("\n! REALLOC CASERNE");
-        int errorCode = CaserneAlloc(&ppcaserne, &nbCaserne);
+        int errorCode = CaserneAlloc(&ppcaserne, &nbCaserne); // Allocation Caserne
+        ppcaserne[nbCaserne - 1]->nbInterv = 0;
+        CaserneAquisition(ppcaserne[nbCaserne - 1]);  // Aquissitons Caserne information
+        // DEBUG // printf("%s", ppcaserne[nbCaserne - 1]->id);
         if (errorCode != 0) {
             return errorCode;
         }
@@ -39,12 +43,13 @@ int main(void) {
             ppcaserne[nbCaserne - 1]->ppTinterv = NULL;
             do {
                 // DEBUG // printf("\n! REALLOC INTERV");
-                int errorCode = IntervAlloc(&ppcaserne[nbCaserne - 1]->ppTinterv, &nbInterv);
+                int errorCode = IntervAlloc(&ppcaserne[nbCaserne - 1]->ppTinterv, &ppcaserne[nbCaserne-1]->nbInterv);
                 if (errorCode != 0) {
                     return errorCode;
                 }
                 else {
-                    // DEBUG // printf("\n!! ALLOC INTERV REUSSIS");
+                    IntervAquisition(ppcaserne[nbCaserne - 1]->ppTinterv[ppcaserne[nbCaserne-1]->nbInterv - 1]);
+                    printf("%s", ppcaserne[nbCaserne - 1]->ppTinterv[ppcaserne[nbCaserne-1]->nbInterv - 1]->date);
                     encoInterv = getche();
                 }
             }while (encoInterv =='y' || encoInterv == 'Y');
@@ -62,7 +67,6 @@ int CaserneAlloc(Caserne ***pppcaserne, int *pNbCaserne) {
     (*pNbCaserne)++;
     Caserne **ppcaserneS = *pppcaserne;
 
-    ppcaserneS = *pppcaserne;
     *pppcaserne = (Caserne **) realloc(*pppcaserne, (*pNbCaserne) * sizeof(Caserne *));
     if (!(*pppcaserne)) {
         (*pNbCaserne)--;
@@ -91,5 +95,20 @@ int IntervAlloc(Intervention ***pppInterv, int *pNbInterv) {
     return 0;
 }
 
+void CaserneAquisition(Caserne *ppcasern) {
+    printf("\nID Caserne");
+    gets(ppcasern->id);
+    printf("\nLocation Caserne");
+    gets(ppcasern->location);
+}
 
-
+void IntervAquisition(Intervention *pInterv) {
+    printf("\nDate intervention");
+    gets(pInterv->date);
+    printf("\nNombre intervention AMB");
+    scanf("%d", &pInterv->nbAmb); getchar();
+    printf("\nNombre intervention INC");
+    scanf("%d", &pInterv->nbInc); getchar();
+    printf("\nNombre intervention DEC");
+    scanf("%d", &pInterv->nbDec); getchar();
+}
