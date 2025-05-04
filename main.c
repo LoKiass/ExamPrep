@@ -21,8 +21,11 @@ typedef struct {
 
 int CaserneAlloc(Caserne ***pppCaserne, int *pNbCaserne);
 int IntervAlloc(Intervention ***pppInterv, int *pNbInterv);
-void CaserneAquisition(Caserne *ppcasern);
+void CaserneAquisition(Caserne *pcasern);
 void IntervAquisition(Intervention *pInterv);
+void AffichageInformation(Caserne **pCaserne, int nombreCaserne);
+void StatGlobale(Caserne **ppCasernen);
+
 
 int main(void) {
     char encoCaserne, encoInterv;
@@ -48,16 +51,19 @@ int main(void) {
                     return errorCode;
                 }
                 else {
-                    IntervAquisition(ppcaserne[nbCaserne - 1]->ppTinterv[ppcaserne[nbCaserne-1]->nbInterv - 1]);
-                    printf("%s", ppcaserne[nbCaserne - 1]->ppTinterv[ppcaserne[nbCaserne-1]->nbInterv - 1]->date);
+                    IntervAquisition(ppcaserne[nbCaserne - 1]->ppTinterv[ppcaserne[nbCaserne-1]->nbInterv - 1]); //
+                    // DEBUG // ("%s", ppcaserne[nbCaserne - 1]->ppTinterv[ppcaserne[nbCaserne-1]->nbInterv - 1]->date);
+                    printf("\nEncore une intervention ? :");
                     encoInterv = getche();
+
                 }
             }while (encoInterv =='y' || encoInterv == 'Y');
         }
+        printf("\nEncore Caserne ? : ");
         encoCaserne = getche();
     }while(encoCaserne == 'y' || encoCaserne == 'Y');
 
-
+    AffichageInformation(ppcaserne, nbCaserne);
 
     getch();
     return 0;
@@ -95,20 +101,40 @@ int IntervAlloc(Intervention ***pppInterv, int *pNbInterv) {
     return 0;
 }
 
-void CaserneAquisition(Caserne *ppcasern) {
+void CaserneAquisition(Caserne *pcasern) {
     printf("\nID Caserne");
-    gets(ppcasern->id);
+    gets(pcasern->id);
     printf("\nLocation Caserne");
-    gets(ppcasern->location);
+    gets(pcasern->location);
 }
-
+// REVOIR + REFAIRE BOUCLE AFFICHAGE
 void IntervAquisition(Intervention *pInterv) {
     printf("\nDate intervention");
     gets(pInterv->date);
-    printf("\nNombre intervention AMB");
+    printf("\nNombre intervention AMB : ");
     scanf("%d", &pInterv->nbAmb); getchar();
-    printf("\nNombre intervention INC");
+    printf("\nNombre intervention INC : ");
     scanf("%d", &pInterv->nbInc); getchar();
-    printf("\nNombre intervention DEC");
+    printf("\nNombre intervention DEC : ");
     scanf("%d", &pInterv->nbDec); getchar();
 }
+
+
+void AffichageInformation(Caserne **ppCasern, int nombreCaserne) {
+    system("cls");
+    for (int z = 0; z < nombreCaserne; z++) {
+        printf("\n--- Caserne %d ---", z + 1);
+        printf("\nID Caserne : %s", ppCasern[z]->id);
+        printf("\nLocation Caserne : %s", ppCasern[z]->location);
+
+        for (int i = 0; i < ppCasern[z]->nbInterv; i++) {
+            printf("\n  > Intervention %d :", i + 1);
+            printf("\n    Date : %s", ppCasern[z]->ppTinterv[i]->date);
+            printf("\n    Nombre AMB : %d", ppCasern[z]->ppTinterv[i]->nbAmb);
+            printf("\n    Nombre INC : %d", ppCasern[z]->ppTinterv[i]->nbInc);
+            printf("\n    Nombre DEC : %d", ppCasern[z]->ppTinterv[i]->nbDec);
+        }
+    }
+    getch();
+}
+
