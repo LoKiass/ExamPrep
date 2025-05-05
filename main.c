@@ -25,7 +25,7 @@ void CaserneAquisition(Caserne *pcasern);
 void IntervAquisition(Intervention *pInterv);
 void AffichageInformation(Caserne **pCaserne, int nombreCaserne);
 void StatGlobale(Caserne **ppCasernen);
-
+void FreeMemory(Caserne **ppCaserneLib, int nbCaserneLib);
 
 int main(void) {
     char encoCaserne, encoInterv;
@@ -64,7 +64,7 @@ int main(void) {
     }while(encoCaserne == 'y' || encoCaserne == 'Y');
 
     AffichageInformation(ppcaserne, nbCaserne);
-
+    FreeMemory(ppcaserne, nbCaserne);
     getch();
     return 0;
 }
@@ -136,5 +136,16 @@ void AffichageInformation(Caserne **ppCasern, int nombreCaserne) {
         }
     }
     getch();
+}
+
+void FreeMemory(Caserne **ppCaserneLib, int nbCaserneLib) {
+    for (int y = 0; y < nbCaserneLib; y++) {
+        for (int x = 0; x < ppCaserneLib[y]->nbInterv; x++) {
+            free(ppCaserneLib[y]->ppTinterv[x]);
+        }
+        free(ppCaserneLib[y]->ppTinterv);
+        free(ppCaserneLib[y]);
+    }
+    free(ppCaserneLib);
 }
 
